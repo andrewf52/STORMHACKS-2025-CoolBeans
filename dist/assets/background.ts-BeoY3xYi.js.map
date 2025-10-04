@@ -1,0 +1,1 @@
+{"version":3,"file":"background.ts-BeoY3xYi.js","sources":["../../src/background.ts"],"sourcesContent":["console.log('CoolBeans background running')\r\n\r\nchrome.runtime.onInstalled.addListener(() => {\r\n  console.log('CoolBeans installed')\r\n})\r\n"],"names":[],"mappings":"AAAA,QAAQ,IAAI,8BAA8B,EAE1C,OAAO,QAAQ,YAAY,YAAY,IAAM,CAC3C,QAAQ,IAAI,qBAAqB,CACnC,CAAC"}
