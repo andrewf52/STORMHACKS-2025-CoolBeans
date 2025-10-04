@@ -6,10 +6,13 @@
     "isEntry": true
   },
   "popup.html": {
-    "file": "assets/popup.html-BmDH0hRP.js",
+    "file": "assets/popup.html-Dd2jYvVb.js",
     "name": "popup.html",
     "src": "popup.html",
-    "isEntry": true
+    "isEntry": true,
+    "css": [
+      "assets/popup-D1jkk8sh.css"
+    ]
   },
   "src/background.ts": {
     "file": "assets/background.ts-Ccou-iAM.js",

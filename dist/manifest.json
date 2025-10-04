@@ -11,17 +11,5 @@
     "default_popup": "popup.html",
     "default_title": "CoolBeans"
   },
-  "permissions": [],
-  "web_accessible_resources": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "resources": [
-        "**/*",
-        "*"
-      ],
-      "use_dynamic_url": false
-    }
-  ]
+  "permissions": []
 }
