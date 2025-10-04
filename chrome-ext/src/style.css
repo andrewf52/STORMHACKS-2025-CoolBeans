@@ -77,6 +77,17 @@ button {
 button:hover {
   border-color: #646cff;
 }
+/* Pizza button styles */
+.pizza {
+  margin-left: 0.8em;
+  background: linear-gradient(180deg, #ffb86b, #ff8f4a);
+  color: #1a1a1a;
+  box-shadow: 0 6px 18px rgba(255, 140, 40, 0.18);
+}
+.pizza.pop {
+  transform: scale(1.08);
+  transition: transform 160ms ease-out;
+}
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
