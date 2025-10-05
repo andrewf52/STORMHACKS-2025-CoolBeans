@@ -29,7 +29,7 @@ if (process.env.MOCK_GEMINI === "true") {
   }
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-    model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+    model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
   } catch (err) {
     console.error("Failed to initialize GoogleGenerativeAI", err);
   }
@@ -46,13 +46,37 @@ app.post("/analyze", async (req, res) => {
       return res.status(500).json({ error: "Model not initialized" });
     }
 
-    const prompt = `Classify this article as positive, neutral, or negative.\nReturn JSON with "label" and "confidence".\nText:\n\n${text}`;
+  const prompt = `Analyze the sentiment of the following news article.\nReturn ONLY a single integer score from 0 to 100, where 0 is extremely negative, 50 is neutral, and 100 is extremely positive.\nRespond ONLY with JSON: { "score": <number> }\nDo not include any other text, explanation, formatting, or fields.\nDo not use label, confidence, or any other field.\nText:\n\n${text}`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const output = response.text();
+    console.log('Gemini raw output:', output);
 
-    res.json({ result: output });
+    // Try to extract the score from the output (handles JSON, markdown code blocks, etc.)
+    let score = null;
+    try {
+      // Try direct JSON parse first
+      const jsonMatch = output.match(/\{[^}]*"score"\s*:\s*(\d+)[^}]*\}/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        score = parsed.score;
+      } else {
+        // Fallback: just look for any number
+        const numMatch = output.match(/\b(\d+)\b/);
+        if (numMatch) {
+          score = parseInt(numMatch[1], 10);
+        }
+      }
+    } catch (e) {
+      console.error('Parse error:', e);
+    }
+
+    if (score !== null && !isNaN(score) && score >= 0 && score <= 100) {
+      res.json({ score });
+    } else {
+      res.json({ error: "AI did not return a valid score", raw: output });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to analyze sentiment" });

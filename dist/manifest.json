@@ -23,5 +23,34 @@
       "96": "icons/favicon-96x96.png"
     }
   },
-  "permissions": []
+  "permissions": [
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "js": [
+        "assets/content-script.js-DhegjVpa.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "resources": [
+        "assets/content-script.js-DhegjVpa.js",
+        "assets/content-script.js-DhegjVpa.js.map"
+      ],
+      "use_dynamic_url": false
+    }
+  ]
 }

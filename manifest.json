@@ -22,5 +22,13 @@
       "96": "icons/favicon-96x96.png"
     }
   },
-  "permissions": []
+  "permissions": ["scripting", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content-script.js"],
+      "run_at": "document_idle"
+    }
+  ]
 }

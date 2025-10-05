@@ -2,17 +2,49 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 
 function App() {
-  const handleClick = () => {
+
+  const [score, setScore] = React.useState<number | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  const handleReadArticle = async () => {
+    setLoading(true);
     try {
-      chrome.runtime.sendMessage({ hello: 'from popup' })
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      chrome.tabs.sendMessage(tab.id!, { action: 'read_article' }, async (response) => {
+        if (response && response.articleText) {
+          // Send to backend API for analysis
+          try {
+            const apiRes = await fetch('http://localhost:3000/analyze', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: response.articleText })
+            });
+            const apiJson = await apiRes.json();
+            if (typeof apiJson.score === 'number') {
+              setScore(apiJson.score);
+            } else {
+              setScore(null);
+              alert('AI API error: ' + (apiJson.error || 'No score returned'));
+            }
+          } catch (err) {
+            setScore(null);
+            alert('Failed to reach AI API: ' + err);
+          }
+        } else {
+          setScore(null);
+          alert('Could not read article content.');
+        }
+        setLoading(false);
+      });
     } catch (e) {
-      console.log('not in extension environment', e)
+      setScore(null);
+      setLoading(false);
+      alert('Not in extension environment: ' + e);
     }
   }
 
-  const [value, setValue] = React.useState(70) // 0..100, 0==truth, 100==lie
-
-  const setRandom = () => setValue(Math.floor(Math.random() * 101))
+  // Gauge value: use AI score if available, else default to 70
+  const value = score !== null ? score : 70;
 
   return (
     <div style={{ fontFamily: 'sans-serif', padding: 12 }}>
@@ -56,7 +88,8 @@ function App() {
                   {/* pointer pivot uses same center - use CSS transform so transition animates */}
                   {
                     (() => {
-                      const deg = (value - 50) * 0.9
+                      // Linear mapping: 0 -> -90deg (far left), 50 -> 0deg (center), 100 -> +90deg (far right)
+                      const deg = (value / 100) * 180 - 90
                       // translate the group so pivot is at (0,0), then rotate the inner group via CSS
                       const innerStyle: React.CSSProperties = {
                         transform: `rotate(${deg}deg)`,
@@ -90,8 +123,7 @@ function App() {
       </div>
 
       <div style={{ marginTop: 8 }}>
-        <button onClick={handleClick}>Send message</button>
-        <button style={{ marginLeft: 8 }} onClick={setRandom}>Random</button>
+        <button onClick={handleReadArticle} disabled={loading}>{loading ? 'Analyzing...' : 'Read & Analyze Article'}</button>
       </div>
     </div>
   )
