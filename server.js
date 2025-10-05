@@ -29,7 +29,7 @@ if (process.env.MOCK_GEMINI === "true") {
   }
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-    model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
   } catch (err) {
     console.error("Failed to initialize GoogleGenerativeAI", err);
   }
